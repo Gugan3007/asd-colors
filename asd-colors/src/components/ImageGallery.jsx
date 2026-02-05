@@ -201,15 +201,15 @@ const ImageGallery = () => {
       )}
 
       {gameComplete && (
-        <div className="mb-4 p-4 bg-asd-success bg-opacity-20 rounded-lg border-2 border-asd-success animate-pulse">
-          <p className="text-lg font-bold text-center text-asd-success">
-            🎉 Excellent! You found all {targetColor} items!
+        <div className="mb-4 p-4 bg-green-50 rounded-lg border-4 border-green-500 animate-pulse shadow-lg">
+          <p className="text-xl font-bold text-center text-gray-900">
+            🎉 Excellent! You found all <span className="text-green-700 uppercase">{targetColor}</span> items!
           </p>
           <button
             onClick={resetGame}
-            className="mt-2 w-full py-2 bg-asd-success text-white rounded-lg font-medium hover:opacity-90"
+            className="mt-3 w-full py-3 bg-green-600 text-white rounded-lg font-bold text-lg hover:bg-green-700 shadow-md"
           >
-            Play Again
+            🔄 Play Again
           </button>
         </div>
       )}
