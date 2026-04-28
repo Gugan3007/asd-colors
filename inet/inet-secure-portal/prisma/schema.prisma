@@ -1,0 +1,111 @@
+// I-Net Secure Labs — Prisma Schema
+// Enterprise-grade data models for the corporate portal
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ──────────────────────────────────────────────
+// Service — represents a product/service offered
+// ──────────────────────────────────────────────
+model Service {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(255)
+  description String   @db.Text
+  icon        String   @db.VarChar(100) // lucide-react icon name
+  category    String   @db.VarChar(100)
+  features    Json     // array of feature strings
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([isActive, sortOrder])
+  @@map("services")
+}
+
+// ──────────────────────────────────────────────
+// Metric — live KPI counters for the dashboard
+// ──────────────────────────────────────────────
+enum MetricType {
+  AGENTS
+  CUSTOMERS
+  TRANSACTIONS
+  LOCATIONS
+}
+
+model Metric {
+  id          String     @id @default(cuid())
+  type        MetricType @unique
+  label       String     @db.VarChar(100)
+  value       Int        @default(0)
+  suffix      String?    @db.VarChar(20) // e.g. "+", "K", "%"
+  icon        String     @db.VarChar(100)
+  description String?    @db.VarChar(255)
+  updatedAt   DateTime   @updatedAt
+
+  @@map("metrics")
+}
+
+// ──────────────────────────────────────────────
+// Project — portfolio / case-study entries
+// ──────────────────────────────────────────────
+model Project {
+  id           String   @id @default(cuid())
+  title        String   @db.VarChar(255)
+  slug         String   @unique @db.VarChar(255)
+  client       String   @db.VarChar(255)
+  industry     String   @db.VarChar(100)
+  summary      String   @db.Text
+  coverImage   String   @db.VarChar(500)
+  technologies Json     // array of tech stack strings
+  results      Json     // { metric: value } pairs
+  isFeatured   Boolean  @default(false)
+  completedAt  DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([industry])
+  @@index([isFeatured])
+  @@map("projects")
+}
+
+// ──────────────────────────────────────────────
+// ContactMessage — inbound lead / enquiry form
+// ──────────────────────────────────────────────
+enum MessageStatus {
+  UNREAD
+  READ
+  REPLIED
+  ARCHIVED
+}
+
+model ContactMessage {
+  id           String        @id @default(cuid())
+  fullName     String        @db.VarChar(255)
+  email        String        @db.VarChar(255)
+  company      String?       @db.VarChar(255)
+  phone        String?       @db.VarChar(50)
+  subject      String        @db.VarChar(255)
+  message      String        @db.Text
+  serviceId    String?       @db.VarChar(255) // optional reference
+  status       MessageStatus @default(UNREAD)
+  ipAddress    String?       @db.VarChar(45)
+  userAgent    String?       @db.Text
+  submittedAt  DateTime      @default(now())
+  readAt       DateTime?
+  repliedAt    DateTime?
+
+  @@index([status])
+  @@index([submittedAt])
+  @@index([email])
+  @@map("contact_messages")
+}
